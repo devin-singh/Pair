@@ -15,13 +15,15 @@ class PairTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        PairController.shared.sortIntoPairs()
+        PairController.shared.loadFromPersistentStorage()
+        //PairController.shared.sortIntoPairs()
     }
     
     // MARK: - Actions
     
     @IBAction func randomizeButtonTapped(_ sender: Any) {
         PairController.shared.sortIntoPairs()
+        PairController.shared.saveToPersistantStore()
         self.tableView.reloadData()
     }
     
@@ -60,7 +62,6 @@ class PairTableViewController: UITableViewController {
         }
         
     }
-    
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "dataCell", for: indexPath)
@@ -111,12 +112,15 @@ extension PairTableViewController: UITextFieldDelegate {
             guard let text = alertController.textFields?.first?.text, !text.isEmpty else { return }
             let sortedPairs = PairController.shared.sortedPairs
             
-            if sortedPairs[sortedPairs.count - 1].secondPerson == nil {
+            if sortedPairs.count == 0 {
+                PairController.shared.sortedPairs.append(Pair(firstPerson: text, secondPerson: nil))
+            } else if  sortedPairs[sortedPairs.count - 1].secondPerson == nil {
                 PairController.shared.sortedPairs[sortedPairs.count - 1].secondPerson = text
-            }else{
+            } else {
                 PairController.shared.sortedPairs.append(Pair(firstPerson: text, secondPerson: nil))
             }
             PairController.shared.dataHolder.append(text)
+            PairController.shared.saveToPersistantStore()
             self.tableView.reloadData()
         }
         
