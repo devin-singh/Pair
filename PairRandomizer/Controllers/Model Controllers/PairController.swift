@@ -26,6 +26,8 @@ class PairController {
    
     private init() {
         self.dataHolder = allData
+        //loadFromPersistentStorage()
+        //loadPersistentPairsIntoDataHolder()
     }
     
     // MARK: - Private Functions
@@ -69,9 +71,80 @@ class PairController {
                 return
             }
         }
-        
-        
-        
+        //saveToPersistantStore()
     }
+    
+    func deleteData(data: String) {
+        guard let index = dataHolder.firstIndex(of: data) else { return }
+        dataHolder.remove(at: index)
+        for (i, pair) in sortedPairs.enumerated() {
+            if pair.firstPerson == data {
+                sortedPairs[i].firstPerson = nil
+            } else if pair.secondPerson == data {
+                sortedPairs[i].secondPerson = nil
+            }
+        }
+        //saveToPersistantStore()
+    }
+    
+    func deleteEmptyPairs() {
+        for (i, pair) in sortedPairs.enumerated() {
+            if pair.firstPerson == nil && pair.secondPerson == nil {
+                sortedPairs.remove(at: i)
+            }
+        }
+        //saveToPersistantStore()
+    }
+    
+     // MARK: - Persistence
+    
+//    func createFileForPersistence() -> URL {
+//        // Grab the users Document directory
+//        let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+//        // Create the new fileURL on the users Phone
+//         let fileUrl = urls[0].appendingPathComponent("Pairs2.json")
+//         return fileUrl
+//     }
+//
+//    func saveToPersistantStore() {
+//        // Create an instance of JSONEncoder
+//        let jsonEncoder = JSONEncoder()
+//        // Attempt to convert our playlist array into JSON
+//        // Anytime a method throws, it must be placed in a do, try, catch block
+//        do {
+//            let jsonPairs = try jsonEncoder.encode(sortedPairs)
+//            //let jsonHolder = try jsonEncoder.encode(dataHolder)
+//            // With the new JSON(d) playlist arraay, save it to the users device
+//            try jsonPairs.write(to: createFileForPersistence())
+//            //try jsonHolder.write(to: createFileForPersistence())
+//        } catch let encodingError {
+//            print("There was an error saving the data! \(encodingError)")
+//        }
+//    }
+//
+//    func loadFromPersistentStorage() {
+//        let jsonDecoder = JSONDecoder()
+//        do {
+//            let jsonData = try Data(contentsOf: createFileForPersistence())
+//            let decodedPairs = try jsonDecoder.decode([Pair].self, from: jsonData)
+//            //let decodedDataHolder = try jsonDecoder.decode([String].self, from: jsonData)
+//            self.sortedPairs = decodedPairs
+//            //self.dataHolder = decodedDataHolder
+//        } catch let decodingError {
+//            print("Error loading data \(decodingError)")
+//        }
+//    }
+//
+//    func loadPersistentPairsIntoDataHolder() {
+//        for pair in sortedPairs {
+//            if let firstPerson = pair.firstPerson {
+//                self.dataHolder.append(firstPerson)
+//            }
+//            if let secondPerson = pair.secondPerson {
+//                self.dataHolder.append(secondPerson)
+//            }
+//        }
+//    }
+
     
 }

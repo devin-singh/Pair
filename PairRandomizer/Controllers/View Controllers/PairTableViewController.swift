@@ -33,7 +33,15 @@ class PairTableViewController: UITableViewController {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return PairController.shared.sortedPairs.count
+        
+        var sectionCount: Int = 0
+        
+        for pair in PairController.shared.sortedPairs {
+            if pair.firstPerson != nil || pair.secondPerson != nil {
+                sectionCount += 1
+            }
+        }
+        return sectionCount
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -42,7 +50,15 @@ class PairTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 2
+        
+        if PairController.shared.sortedPairs[section].firstPerson != nil && PairController.shared.sortedPairs[section].secondPerson != nil {
+            return 2
+        } else if PairController.shared.sortedPairs[section].firstPerson != nil || PairController.shared.sortedPairs[section].secondPerson != nil {
+            return 1
+        } else {
+            return 0
+        }
+        
     }
     
     
@@ -62,7 +78,23 @@ class PairTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             
-            tableView.deleteRows(at: [indexPath], with: .fade)
+            var dataToDelete: String?
+            if indexPath.row == 0 {
+                dataToDelete = PairController.shared.sortedPairs[indexPath.section].firstPerson
+            } else {
+                dataToDelete = PairController.shared.sortedPairs[indexPath.section].secondPerson
+            }
+            
+            guard let dataToDeleteUW = dataToDelete else { return }
+            
+            PairController.shared.deleteData(data: dataToDeleteUW)
+         
+            if PairController.shared.sortedPairs[indexPath.section].firstPerson == nil && PairController.shared.sortedPairs[indexPath.section].secondPerson == nil {
+                PairController.shared.deleteEmptyPairs()
+                tableView.deleteSections(IndexSet(integer: indexPath.section) , with: .fade)
+            } else {
+                tableView.deleteRows(at: [indexPath], with: .fade)
+            }
         }
     }
 }

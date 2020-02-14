@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Pair {
+class Pair: Codable {
     var firstPerson: String?
     var secondPerson: String?
     
